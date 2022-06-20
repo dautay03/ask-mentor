@@ -57,12 +57,13 @@ const Menu = this.props.data.map((staff)=>
     {return(
         <div className="col-12 col-md-5 col-lg-3 m-1">
             <Card key={staff.id} onClick={()=>this.seclecStaffs(staff)}>
-                <CardTitle>
+                <CardTitle style={{alignContent: 'center'}}>
                 {staff.name}
                 </CardTitle>
             </Card>
         </div>
     )})
+
 
     return(
         <div className="container">

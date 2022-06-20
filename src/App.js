@@ -1,35 +1,28 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import './App.css';
-import { Navbar, NavbarBrand, NavbarText } from 'reactstrap';
-import { STAFFS } from './data/staffs';
-import StaffList from './component/MenuStaffs';
-import {cot} from './component/cot'
-import Main from './component/main';
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      Staff: STAFFS 
-    };
-  }
-  render(){
+import Header from './component/layout/header';
+import Footer from './component/layout/footer';
+import PageStaff from './component/page/Staff';
+import { DEPARTMENTS, STAFFS } from './data/staffs';
+import { Route,Routes } from 'react-router';
+import StaffCurrent from './component/page/staffcurrent';
+import Department from './component/page/department';
+import Money from './component/page/money';
+function App (){
+     const [staffList]=useState({Staff: STAFFS }) 
+  
   return (
     <div className="App">
-      <Navbar dark color="primary">
-          <div className="container">
-            <NavbarBrand href="/">Ứng dụng quản lý nhân sự v1.0</NavbarBrand>
-          </div>
-          <div className='container'  >
-            <NavbarBrand className='col-4 col-lg-4 col-md-4' >số cột</NavbarBrand>
-            <NavbarBrand className='col-3 ' onClick={()=>cot('col-5 col-md-5 col-lg-5 m-1')} >2</NavbarBrand>
-            <NavbarBrand className='col-3 ' onClick={()=>cot('col-3 col-md-3 col-lg-3 m-1')} >3</NavbarBrand>
-            <NavbarBrand className='col-3 ' onClick={()=>cot('col-2 col-md-2 col-lg-2 m-1')} >5</NavbarBrand>
-            <NavbarText onClick={()=>cot('col-12 col-md-5 col-lg-3 m-1')}>click reponsive</NavbarText>
-          </div>
-        </Navbar>
-        <StaffList data={this.state.Staff}/>  
-        <Main data={this.state.Staff} />
+      <Header />
+      <Routes>
+        <Route path='/staff' element={<PageStaff props={staffList.Staff}/>} />
+        <Route path='/' element={<PageStaff props={staffList.Staff}/>} />
+        <Route path='/staff/:staffID' element={<StaffCurrent staff={staffList.Staff} />}  />
+        <Route path='/department' element={<Department department={DEPARTMENTS} />}  />
+        <Route path='/money' element={<Money money={staffList.Staff} />}  />
+      </Routes>
+      <Footer />
     </div>
   );
-}}
+}
 export default App;
