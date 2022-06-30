@@ -13,7 +13,7 @@ function StaffCurrent (props){
     })
     console.log(state.staff)
     return(
-        <div>
+        <div key={state.staff.id} style={{marginBottom:'15px'}}>
             <Breadcrumb className='container'>
                 <BreadcrumbItem><Link to="/staff">Nhân Viên</Link></BreadcrumbItem>
                 <BreadcrumbItem active>{state.staff.name}</BreadcrumbItem>
@@ -22,12 +22,12 @@ function StaffCurrent (props){
                 <div className='row'>
                     <Media className='col-12 col-md-4 col-lg-3' src={state.staff.image} alt={state.staff.name} />
                     <Media className='col-12 col-md-8 col-lg-9'>
-                        <h6>
+                        <h4>
                             <CardText>
                                 {`Họ và tên:${state.staff.name}`}
                         
                             </CardText>
-                        </h6>
+                        </h4>
                         <CardText>
                             {`Ngày sinh: ${dateFormat(state.staff.doB, "dd/mm/yyyy")}`}
                         </CardText>

@@ -30,16 +30,11 @@ const  toggleNav=()=> {
                             <NavItem>
                                 <NavLink id='3' className="nav-link " to='/money'><span className="bi bi-card-coin bi-lg"></span> Bảng lương</NavLink>
                             </NavItem>
-
                             </Nav>
                         </Collapse>
                     </div>
                 </Navbar>
-                
           
-      
-   
-
     )
 }
 
