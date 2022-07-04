@@ -14,25 +14,43 @@ import {
   Input,
 } from "reactstrap";
 function PageStaff(props) {
-  let [State] = useState({
+  let [State, setstate] = useState({
     Staff: props,
   });
+  console.log(props);
+  console.log(State.Staff);
+  if (props !== State.Staff) {
+    setstate({ Staff: props });
+  }
+
   let [modalNewStaff, setmodal] = useState({
     modal: false,
   });
   let validate = {
+    id: State.Staff.props.length,
     name: "",
     doB: "",
     startDate: "",
     salaryScale: 0,
-    department: "option",
+    department: "Sale",
     annualLeave: 0,
     overTime: 0,
+    image: "/assets/images/alberto.png",
   };
   let [staffform, setstaffform] = useState(validate);
 
   let [staffformError, setstaffformError] = useState({});
 
+  let [search, setsearch] = useState({ name: "" });
+  let [search2, setsearch2] = useState({ name: "" });
+
+  const searchstaff = function () {
+    setsearch({ ...search, name: search2.name });
+  };
+  const searchChange = function (e) {
+    const value = e.target.value;
+    setsearch2({ ...search2, name: value });
+  };
   const changeInput = function (e) {
     const { name, value } = e.target;
     setstaffform({ ...staffform, [name]: value });
@@ -60,11 +78,16 @@ function PageStaff(props) {
       check(staffform.name, staffform.startDate, staffform.doB)
     );
     if (
-      staffformError.name !== "" &&
-      staffformError.doB !== "" &&
-      staffformError.startDate !== ""
+      staffformError.name === "" &&
+      staffformError.doB === "" &&
+      staffformError.startDate === ""
     ) {
-      props.modal();
+      console.log(staffform);
+
+      props.addNewstaff(staffform);
+      console.log(staffform);
+      setstaffform(validate);
+      modal();
     }
     e.preventDefault();
   };
@@ -110,37 +133,60 @@ function PageStaff(props) {
 
   const modal = () => setmodal({ modal: !modalNewStaff.modal });
 
-  const printStaff = State.Staff.props.map((staff) => {
-    return (
-      <div
-        key={staff.id}
-        className="col-6 col-md-4 col-lg-2"
-        style={{ padding: "5px" }}
-      >
-        <nav>
-          <Link to={`/staff/${staff.id}`}>
-            <Card key={staff.id}>
-              <CardImg src={staff.image} alt={`${staff.name}`} />
-              <CardTitle style={{ textAlign: "center" }}>
-                {staff.name}
-              </CardTitle>
-            </Card>
-          </Link>
-        </nav>
-      </div>
-    );
-  });
+  const printStaff = State.Staff.props
+    .filter((e) => {
+      if (search.name.length !== 0) {
+        return (
+          e.name.includes(search.name.toUpperCase()) ||
+          e.name.includes(search.name.toLowerCase())
+        );
+      } else {
+        return true;
+      }
+    })
+    .map((staff) => {
+      return (
+        <div
+          key={staff.id}
+          className="col-6 col-md-4 col-lg-2"
+          style={{ padding: "5px" }}
+        >
+          <nav>
+            <Link to={`/staff/${staff.id}`} style={{ textDecoration: "none" }}>
+              <Card key={staff.id}>
+                <CardImg src={staff.image} alt={`${staff.name}`} />
+                <CardTitle
+                  style={{
+                    textAlign: "center",
+
+                    color: "InfoText",
+                  }}
+                >
+                  {staff.name}
+                </CardTitle>
+              </Card>
+            </Link>
+          </nav>
+        </div>
+      );
+    });
   return (
     <div className="container row" style={{ margin: "auto" }}>
       <div className="container row">
-        <h3
-          className="col-lg-3 col-4 col-md-3 m-1"
-          style={{ padding: "0px", fontWeight: "700" }}
+        <div
+          className="col-lg-3 col-9 col-md-3 m-1"
+          style={{
+            padding: "0px",
+            fontWeight: "700",
+          }}
         >
-          Nhân Viên
-        </h3>
-        <div className="col-5 col-md-1 col-lg-4 m-1" style={{ padding: "0px" }}>
-          <Button onClick={() => modal()}>+</Button>
+          <h3 style={{ marginTop: "8px", marginBottom: "0px" }}>Nhân Viên</h3>
+        </div>
+
+        <div className="col-2 col-md-3 col-lg-4 m-1" style={{ padding: "0px" }}>
+          <Button className="col-12 col-md-4 col-lg-2" onClick={() => modal()}>
+            +
+          </Button>
         </div>
         <Modal className="col-11 col-md-8 col-lg-4" show={modalNewStaff.modal}>
           <ModalHeader>
@@ -176,7 +222,7 @@ function PageStaff(props) {
                 </Label>
                 <Col className="mb-2 col-12 " md={8}>
                   <Input
-                    type="date"
+                    type="datetime-local"
                     name="doB"
                     placeholder="Ngày sinh"
                     value={staffform.doB}
@@ -193,7 +239,7 @@ function PageStaff(props) {
                 </Label>
                 <Col className="mb-2 col-12 " md={8}>
                   <Input
-                    type="date"
+                    type="datetime-local"
                     name="startDate"
                     placeholder="Ngày vào công ty"
                     value={staffform.startDate}
@@ -210,14 +256,14 @@ function PageStaff(props) {
                 </Label>
                 <Col className="mb-2 col-12 " md={8}>
                   <select
+                    style={{ width: "100%" }}
                     type="select"
                     name="department"
                     value={staffform.department}
                     onChange={changeInput}
                   >
-                    <option>option</option>
-                    <option value="HR">HR</option>
                     <option value="Sale">Sale</option>
+                    <option value="HR">HR</option>
                     <option value="Marketing">Marketing</option>
                     <option value="IT">IT</option>
                     <option value="Finance">Finance</option>
@@ -279,11 +325,30 @@ function PageStaff(props) {
             </Form>
           </ModalBody>
         </Modal>
-        <div className="col-12 col-md-6 col-lg-4" style={{ padding: "0px" }}>
-          <input className="m-1" type="search"></input>
-          <button>
-            <i className="bi bi-search bi-lg"></i> tìm
-          </button>
+        <div
+          className="col-12 col-md-5 col-lg-4 row"
+          style={{ padding: "0px", margin: "auto" }}
+        >
+          <div className="col-9" style={{ padding: "0px" }}>
+            <input
+              className="col-11 m-1"
+              style={{ border: "1px solid black" }}
+              type="search"
+              name="name"
+              placeholder="tìm kiếm"
+              value={search2.name}
+              onChange={searchChange}
+            ></input>
+          </div>
+          <div className="col-3 col-md" style={{ padding: "3px 6px" }}>
+            <button
+              className="col-10"
+              onClick={searchstaff}
+              style={{ marginLeft: "3px" }}
+            >
+              tìm
+            </button>
+          </div>
         </div>
       </div>
       <div className="container row">{printStaff}</div>
