@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, ModalHeader, ModalBody, ModalTitle } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -13,21 +14,24 @@ import {
   Label,
   Input,
 } from "reactstrap";
-function PageStaff(props) {
+import { actionAddStaff } from "../../store/action";
+function PageStaff() {
+  let staff = useSelector((state) => state.Staff);
+  console.log(staff);
   let [State, setstate] = useState({
-    Staff: props,
+    Staff: staff,
   });
-  console.log(props);
-  console.log(State.Staff);
-  if (props !== State.Staff) {
-    setstate({ Staff: props });
+  localStorage.setItem("staff", JSON.stringify(State.Staff));
+  if (staff.length !== State.Staff.length) {
+    console.log(staff, State.Staff);
+    setstate({ ...State, Staff: staff });
   }
-
+  const dispatch = useDispatch();
   let [modalNewStaff, setmodal] = useState({
     modal: false,
   });
   let validate = {
-    id: State.Staff.props.length,
+    id: State.Staff.length,
     name: "",
     doB: "",
     startDate: "",
@@ -82,10 +86,8 @@ function PageStaff(props) {
       staffformError.doB === "" &&
       staffformError.startDate === ""
     ) {
-      console.log(staffform);
+      dispatch(actionAddStaff(staffform));
 
-      props.addNewstaff(staffform);
-      console.log(staffform);
       setstaffform(validate);
       modal();
     }
@@ -133,43 +135,41 @@ function PageStaff(props) {
 
   const modal = () => setmodal({ modal: !modalNewStaff.modal });
 
-  const printStaff = State.Staff.props
-    .filter((e) => {
-      if (search.name.length !== 0) {
-        return (
-          e.name.includes(search.name.toUpperCase()) ||
-          e.name.includes(search.name.toLowerCase())
-        );
-      } else {
-        return true;
-      }
-    })
-    .map((staff) => {
+  const printStaff = State.Staff.filter((e) => {
+    if (search.name.length !== 0) {
       return (
-        <div
-          key={staff.id}
-          className="col-6 col-md-4 col-lg-2"
-          style={{ padding: "5px" }}
-        >
-          <nav>
-            <Link to={`/staff/${staff.id}`} style={{ textDecoration: "none" }}>
-              <Card key={staff.id}>
-                <CardImg src={staff.image} alt={`${staff.name}`} />
-                <CardTitle
-                  style={{
-                    textAlign: "center",
-
-                    color: "InfoText",
-                  }}
-                >
-                  {staff.name}
-                </CardTitle>
-              </Card>
-            </Link>
-          </nav>
-        </div>
+        e.name.includes(search.name.toUpperCase()) ||
+        e.name.includes(search.name.toLowerCase())
       );
-    });
+    } else {
+      return true;
+    }
+  }).map((staff) => {
+    return (
+      <div
+        key={staff.id}
+        className="col-6 col-md-4 col-lg-2"
+        style={{ padding: "5px" }}
+      >
+        <nav>
+          <Link to={`/staff/${staff.id}`} style={{ textDecoration: "none" }}>
+            <Card key={staff.id}>
+              <CardImg src={staff.image} alt={`${staff.name}`} />
+              <CardTitle
+                style={{
+                  textAlign: "center",
+
+                  color: "InfoText",
+                }}
+              >
+                {staff.name}
+              </CardTitle>
+            </Card>
+          </Link>
+        </nav>
+      </div>
+    );
+  });
   return (
     <div className="container row" style={{ margin: "auto" }}>
       <div className="container row">
